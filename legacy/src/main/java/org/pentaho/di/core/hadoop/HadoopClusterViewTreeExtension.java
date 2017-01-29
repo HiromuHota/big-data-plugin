@@ -58,9 +58,7 @@ import java.util.concurrent.Future;
     extensionPointId = "SpoonViewTreeExtension" )
 
 public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
-  private Spoon spoon = null;
-  private Future<HadoopClusterDelegate> ncDelegate = null;
-  private Image hadoopClusterImage = null;
+//  private Image hadoopClusterImage = null;
   private static Class<?> PKG = Spoon.class;
   public static final String STRING_NAMED_CLUSTERS =
     BaseMessages.getString( HadoopClusterViewTreeExtension.class, "NamedClusterDialog.STRING_NAMED_CLUSTERS" );
@@ -68,13 +66,7 @@ public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
   private LogChannelInterface log = new LogChannel( HadoopClusterViewTreeExtension.class.getName() );
 
   public HadoopClusterViewTreeExtension() {
-    spoon = Spoon.getInstance();
-    ncDelegate = ExecutorUtil.getExecutor().submit( new Callable<HadoopClusterDelegate>() {
-      @Override public HadoopClusterDelegate call() throws Exception {
-        return NamedClusterUIHelper.getNamedClusterUIFactory().createHadoopClusterDelegate( spoon );
-      }
-    } );
-    hadoopClusterImage = getHadoopClusterImage( spoon.getDisplay() );
+//    hadoopClusterImage = getHadoopClusterImage( Spoon.getInstance().getDisplay() );
   }
 
   public void callExtensionPoint( LogChannelInterface log, Object extension ) throws KettleException {
@@ -89,12 +81,18 @@ public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
   }
 
   private void editNamedCluster( SelectionTreeExtension selectionTreeExtension ) throws KettleException {
+    final Spoon spoon = Spoon.getInstance();
+    Future<HadoopClusterDelegate> ncDelegate = ExecutorUtil.getExecutor().submit( new Callable<HadoopClusterDelegate>() {
+      @Override public HadoopClusterDelegate call() throws Exception {
+        return NamedClusterUIHelper.getNamedClusterUIFactory().createHadoopClusterDelegate( spoon );
+      }
+    } );
     Object selection = selectionTreeExtension.getSelection();
     if ( selection instanceof NamedCluster ) {
       NamedCluster selectedNamedCluster = (NamedCluster) selection;
       try {
-        spoon.getTreeManager().update( HadoopClusterFolderProvider.STRING_NAMED_CLUSTERS );
-        ncDelegate.get().editNamedCluster( spoon.metaStore, selectedNamedCluster, spoon.getShell() );
+        Spoon.getInstance().getTreeManager().update( HadoopClusterFolderProvider.STRING_NAMED_CLUSTERS );
+        ncDelegate.get().editNamedCluster( Spoon.getInstance().metaStore, selectedNamedCluster, Spoon.getInstance().getShell() );
       } catch ( InterruptedException e ) {
         throw new KettleException( "Interrupted while waiting on " + HadoopClusterDelegate.class.getCanonicalName(),
           e );
@@ -113,9 +111,9 @@ public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
 
     List<NamedCluster> namedClusters;
     try {
-      namedClusters = NamedClusterManager.getInstance().list( spoon.metaStore );
+      namedClusters = NamedClusterManager.getInstance().list( Spoon.getInstance().metaStore );
     } catch ( MetaStoreException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+      new ErrorDialog( Spoon.getInstance().getShell(), BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
           BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.NamedCluster" ), e );
 
       return;
@@ -126,7 +124,7 @@ public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
         continue;
       }
 
-      createTreeItem( tiNcTitle, namedCluster.getName(), hadoopClusterImage );
+      createTreeItem( tiNcTitle, namedCluster.getName(), getHadoopClusterImage( Spoon.getInstance().getDisplay() ) );
     }
   }
 
@@ -142,7 +140,7 @@ public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
       return true;
     }
 
-    String filter = spoon.selectionFilter.getText();
+    String filter = Spoon.getInstance().selectionFilter.getText();
     if ( Const.isEmpty( filter ) ) {
       return true;
     }
