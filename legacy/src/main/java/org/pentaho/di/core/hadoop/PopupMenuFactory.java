@@ -40,32 +40,25 @@ import org.pentaho.di.ui.spoon.Spoon;
 public class PopupMenuFactory {
   private static final int RESULT_YES = 0;
 
-  private Spoon spoon = null;
   private static Class<?> PKG = PopupMenuFactory.class;
   private HadoopClusterDelegate ncDelegate = null;
-  public static PopupMenuFactory popupMenuFactory = null;
-  private Menu newMenu = null;
-  private Menu maintMenu = null;
   private NamedCluster selectedNamedCluster = null;
 
   public PopupMenuFactory() {
-    spoon = Spoon.getInstance();
+    Spoon spoon = Spoon.getInstance();
     ncDelegate = NamedClusterUIHelper.getNamedClusterUIFactory().createHadoopClusterDelegate( spoon );
   }
 
   public Menu createNewPopupMenu( final Tree selectionTree ) {
-    if ( newMenu == null ) {
-      newMenu = new Menu( selectionTree );
+    Menu newMenu = new Menu( selectionTree );
       createPopupMenu( newMenu, BaseMessages.getString( PKG, "PopupMenuFactory.NAMEDCLUSTERS.New" ),
           new NewNamedClusterCommand() );
-    }
     return newMenu;
   }
 
   public Menu createMaintPopupMenu( final Tree selectionTree, NamedCluster selectedNamedCluster ) {
     this.selectedNamedCluster = selectedNamedCluster;
-    if ( maintMenu == null ) {
-      maintMenu = new Menu( selectionTree );
+    Menu maintMenu = new Menu( selectionTree );
       createPopupMenu( maintMenu, BaseMessages.getString( PKG, "PopupMenuFactory.NAMEDCLUSTERS.New" ),
           new NewNamedClusterCommand() );
       createPopupMenu( maintMenu, BaseMessages.getString( PKG, "PopupMenuFactory.NAMEDCLUSTERS.Edit" ),
@@ -74,7 +67,6 @@ public class PopupMenuFactory {
           new DuplicateNamedClusterCommand() );
       createPopupMenu( maintMenu, BaseMessages.getString( PKG, "PopupMenuFactory.NAMEDCLUSTERS.Delete" ),
           new DeleteNamedClusterCommand() );
-    }
     return maintMenu;
   }
 
@@ -98,6 +90,7 @@ public class PopupMenuFactory {
   class NewNamedClusterCommand implements NamedClusterCommand {
     public void execute() {
       VariableSpace vs = null;
+      Spoon spoon = Spoon.getInstance();
       if ( spoon.getActiveMeta() instanceof TransMeta ) {
         vs = spoon.getActiveTransformation();
       } else {
@@ -110,6 +103,7 @@ public class PopupMenuFactory {
 
   class EditNamedClusterCommand implements NamedClusterCommand {
     public void execute() {
+      Spoon spoon = Spoon.getInstance();
       spoon.getTreeManager().update( HadoopClusterFolderProvider.STRING_NAMED_CLUSTERS );
       ncDelegate.editNamedCluster( spoon.metaStore, selectedNamedCluster, spoon.getShell() );
     }
@@ -117,6 +111,7 @@ public class PopupMenuFactory {
 
   class DuplicateNamedClusterCommand implements NamedClusterCommand {
     public void execute() {
+      Spoon spoon = Spoon.getInstance();
       spoon.getTreeManager().update( HadoopClusterFolderProvider.STRING_NAMED_CLUSTERS );
       ncDelegate.dupeNamedCluster( spoon.metaStore, selectedNamedCluster, spoon.getShell() );
     }
@@ -124,6 +119,7 @@ public class PopupMenuFactory {
 
   class DeleteNamedClusterCommand implements NamedClusterCommand {
     public void execute() {
+      Spoon spoon = Spoon.getInstance();
       String title = BaseMessages.getString( PKG, "PopupMenuFactory.NAMEDCLUSTERS.DeleteNamedClusterAsk.Title" );
       String message =
           BaseMessages.getString( PKG, "PopupMenuFactory.NAMEDCLUSTERS.DeleteNamedClusterAsk.Message",
@@ -141,12 +137,5 @@ public class PopupMenuFactory {
       spoon.getTreeManager().update( HadoopClusterFolderProvider.STRING_NAMED_CLUSTERS );
       ncDelegate.delNamedCluster( spoon.metaStore, selectedNamedCluster );
     }
-  }
-
-  public static PopupMenuFactory newInstance() {
-    if ( popupMenuFactory == null ) {
-      popupMenuFactory = new PopupMenuFactory();
-    }
-    return popupMenuFactory;
   }
 }
