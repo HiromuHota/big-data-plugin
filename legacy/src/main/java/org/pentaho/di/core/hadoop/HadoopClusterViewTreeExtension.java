@@ -58,7 +58,7 @@ import java.util.concurrent.Future;
     extensionPointId = "SpoonViewTreeExtension" )
 
 public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
-  private Image hadoopClusterImage = null;
+//  private Image hadoopClusterImage = null;
   private static Class<?> PKG = Spoon.class;
   public static final String STRING_NAMED_CLUSTERS =
     BaseMessages.getString( HadoopClusterViewTreeExtension.class, "NamedClusterDialog.STRING_NAMED_CLUSTERS" );
@@ -66,7 +66,7 @@ public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
   private LogChannelInterface log = new LogChannel( HadoopClusterViewTreeExtension.class.getName() );
 
   public HadoopClusterViewTreeExtension() {
-    hadoopClusterImage = getHadoopClusterImage( Spoon.getInstance().getDisplay() );
+//    hadoopClusterImage = getHadoopClusterImage( Spoon.getInstance().getDisplay() );
   }
 
   public void callExtensionPoint( LogChannelInterface log, Object extension ) throws KettleException {
@@ -123,7 +123,7 @@ public class HadoopClusterViewTreeExtension implements ExtensionPointInterface {
         continue;
       }
 
-      createTreeItem( tiNcTitle, namedCluster.getName(), hadoopClusterImage );
+      createTreeItem( tiNcTitle, namedCluster.getName(), getHadoopClusterImage( Spoon.getInstance().getDisplay() ) );
     }
   }
 
