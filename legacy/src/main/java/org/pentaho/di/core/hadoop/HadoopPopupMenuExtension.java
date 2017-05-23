@@ -38,10 +38,7 @@ import org.pentaho.di.ui.spoon.TreeSelection;
 
 public class HadoopPopupMenuExtension implements ExtensionPointInterface {
 
-  private Spoon spoon = null;
-
   public HadoopPopupMenuExtension() {
-    spoon = Spoon.getInstance();
   }
 
   public void callExtensionPoint( LogChannelInterface log, Object extension ) throws KettleException {
@@ -52,9 +49,9 @@ public class HadoopPopupMenuExtension implements ExtensionPointInterface {
   private void createNewPopupMenu( final Tree selectionTree ) {
 
     Menu popupMenu = null;
-    PopupMenuFactory factory = PopupMenuFactory.newInstance();
+    PopupMenuFactory factory = new PopupMenuFactory();
 
-    TreeSelection[] objects = spoon.getTreeObjects( selectionTree );
+    TreeSelection[] objects = Spoon.getInstance().getTreeObjects( selectionTree );
     if ( objects.length != 1 ) {
       return;
     }
