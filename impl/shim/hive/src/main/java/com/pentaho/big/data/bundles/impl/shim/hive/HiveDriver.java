@@ -65,17 +65,13 @@ public class HiveDriver implements Driver {
     } catch ( URISyntaxException e1 ) {
       throw new SQLException( "Unable to parse jdbc url: " + url, e1 );
     }
-    /*
-     * Comment-out to prevent "Invalid thread access" error in webSpoon.
-     * I think this is not harmful because namedCluster is not used actually.
-     */
-//    NamedCluster namedCluster;
-//    try {
-//      namedCluster = jdbcUrl.getNamedCluster();
-//    } catch ( Exception e ) {
-//      return null;
-//    }
-    if ( !acceptsURL( url, driver, null ) ) {
+    NamedCluster namedCluster;
+    try {
+      namedCluster = jdbcUrl.getNamedCluster();
+    } catch ( Exception e ) {
+      return null;
+    }
+    if ( !acceptsURL( url, driver, namedCluster ) ) {
       return null;
     }
     try {
